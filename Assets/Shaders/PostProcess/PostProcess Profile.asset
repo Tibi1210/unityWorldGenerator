@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
+  m_Name: PostProcess Profile
+  m_EditorClassIdentifier: 
+  components:
+  - {fileID: 8703428216632053019}
+  - {fileID: 6026097294868534387}
+--- !u!114 &6026097294868534387
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33215941925ef744792861a8715ff441, type: 3}
+  m_Name: CloudSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  on:
+    m_OverrideState: 1
+    m_Value: 2
+  color:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  alpha:
+    m_OverrideState: 1
+    m_Value: 1
+  BoundsMin:
+    m_OverrideState: 1
+    m_Value: {x: -1000, y: 100, z: -1000}
+  BoundsMax:
+    m_OverrideState: 1
+    m_Value: {x: 1000, y: 150, z: 1000}
+  RenderDistance:
+    m_OverrideState: 1
+    m_Value: 1000
+  Steps:
+    m_OverrideState: 1
+    m_Value: 15
+  LightSteps:
+    m_OverrideState: 1
+    m_Value: 10
+  CloudNoiseTexure:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: bf7ecf841f4a8194fb3e47fcc1733a1c, type: 3}
+    dimension: 1
+  CloudScale:
+    m_OverrideState: 1
+    m_Value: 0.25
+  CloudSmooth:
+    m_OverrideState: 1
+    m_Value: 10
+  Wind:
+    m_OverrideState: 1
+    m_Value: {x: 0.1, y: 0, z: 0}
+  LightAbsorptionThroughCloud:
+    m_OverrideState: 1
+    m_Value: 0.25
+  PhaseParams:
+    m_OverrideState: 1
+    m_Value: {x: 0.1, y: 0.25, z: 0.5, w: 0}
+  ContainerEdgeFadeDst:
+    m_OverrideState: 1
+    m_Value: 4000
+  DensityThreshold:
+    m_OverrideState: 1
+    m_Value: 0.25
+  DensityMultiplier:
+    m_OverrideState: 1
+    m_Value: 5
+  LightAbsorptionTowardSun:
+    m_OverrideState: 1
+    m_Value: 0.6
+  DarknessThreshold:
+    m_OverrideState: 1
+    m_Value: 0.1
+  detailCloudWeight:
+    m_OverrideState: 1
+    m_Value: 0.25
+  DetailCloudNoiseTexure:
+    m_OverrideState: 1
+    m_Value: {fileID: 11700000, guid: 32c4207205bb8a54c9d890973eb8c1b3, type: 2}
+    dimension: 1
+  DetailCloudScale:
+    m_OverrideState: 1
+    m_Value: 0.6
+  DetailCloudWind:
+    m_OverrideState: 1
+    m_Value: {x: 0.2, y: 0, z: 0}
+  BlueNoiseTexure:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: 5ce43b827776d12409d6d0b7d026e346, type: 3}
+    dimension: 1
+  RayOffsetStrength:
+    m_OverrideState: 1
+    m_Value: 30
+--- !u!114 &8703428216632053019
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50801c06344704e4484b40082b5f46a6, type: 3}
+  m_Name: SamplePostProcessSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  on:
+    m_OverrideState: 1
+    m_Value: 2
+  color:
+    m_OverrideState: 1
+    m_Value: {r: 0.4669811, g: 0.8487721, b: 1, a: 1}
+  color2:
+    m_OverrideState: 1
+    m_Value: {r: 0.7311321, g: 0.9919371, b: 1, a: 1}
+  alpha:
+    m_OverrideState: 1
+    m_Value: 0.005
+  RenderDistance:
+    m_OverrideState: 1
+    m_Value: 150
+--- !u!114 &8734194915912964152
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50801c06344704e4484b40082b5f46a6, type: 3}
+  m_Name: SamplePostProcessSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  on:
+    m_OverrideState: 0
+    m_Value: 1
+  color:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  color2:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  alpha:
+    m_OverrideState: 0
+    m_Value: 1
+  RenderDistance:
+    m_OverrideState: 0
+    m_Value: 200
