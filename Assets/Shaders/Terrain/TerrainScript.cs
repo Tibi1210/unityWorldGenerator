@@ -3,9 +3,31 @@ using UnityEngine.Rendering;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class TerrainScript : MonoBehaviour {
-    public Shader materialShader;
-    public ComputeShader computeShader;
+    public Shader TerrainShader;
+    public ComputeShader heightmapComputeShader;
     private int FractalNoiseCS;
+
+
+    [Header("Vegetation Settings")]
+    public ComputeShader grassComputeShader;
+    public Mesh grassMesh;
+    public Material grassMaterial;
+    public float scale = 0.1f;
+    public Vector2 minMaxBladeHeight = new Vector2(0.5f, 1.5f);
+    private Bounds bounds;
+    private int terrainTriangleCount = 0;
+    private GraphicsBuffer terrainTriangleBuffer;
+    private GraphicsBuffer terrainVertexBuffer;
+    private GraphicsBuffer transformMatrixBuffer;
+    private GraphicsBuffer grassTriangleBuffer;
+    private GraphicsBuffer grassVertexBuffer;
+    private GraphicsBuffer grassUVBuffer;
+    private int grass_kernel;
+    [Range(0.0f, 1.0f)] public float grassDensity = 1.0f;
+    [Range(0.0f, 1.0f)] public float grassSlope = 1.0f;
+    [Range(-50.0f, 50.0f)] public float minHeight =01.0f;
+
+
 
     // Plane
     private const int planeSize = 100;
@@ -15,6 +37,7 @@ public class TerrainScript : MonoBehaviour {
     private Mesh mesh;
     private Mesh Cmesh;
     private Vector3[] vertices;
+    private int[] triangles;
     private Vector3[] normals;
     private Material objMaterial;
     private RenderTexture computeResult;
@@ -39,6 +62,7 @@ public class TerrainScript : MonoBehaviour {
         public float shift;
     }
 
+    [Header("Heightmap Settings")]
     public bool updateOctave = false;
     public float baseFrequency = 1;
     [SerializeField] public UI_OctaveParams octave1;
@@ -49,7 +73,6 @@ public class TerrainScript : MonoBehaviour {
     private ComputeBuffer heightBuffer;
     public bool reCalcCollision = false;
 
-#region Material Settings
     [Header("Material Settings")]
     [ColorUsageAttribute(false, true)] public Color ambient;
     [ColorUsageAttribute(false, true)] public Color ambient2;
@@ -63,8 +86,6 @@ public class TerrainScript : MonoBehaviour {
     [Range(0.0f, 1.0f)] public float sheenTint = 1;
     [Range(0.0f, 1.0f)] public float clearCoat = 1;
     [Range(0.0f, 1.0f)] public float clearCoatGloss = 1;
-#endregion
-
 
 
     void FillOctaveStruct(UI_OctaveParams displaySettings, ref OctaveParams computeSettings) {
@@ -80,7 +101,7 @@ public class TerrainScript : MonoBehaviour {
         FillOctaveStruct(octave3, ref octaves[2]);
         FillOctaveStruct(octave4, ref octaves[3]);
         octaveBuffer.SetData(octaves);
-        computeShader.SetBuffer(FractalNoiseCS, "_Octaves", octaveBuffer);
+        heightmapComputeShader.SetBuffer(FractalNoiseCS, "_Octaves", octaveBuffer);
     }
 
     RenderTexture CreateRenderTex(int width, int height, int depth, RenderTextureFormat format, bool useMips) {
@@ -118,7 +139,7 @@ public class TerrainScript : MonoBehaviour {
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.tangents = tangents;
-        int[] triangles = new int[sideVertCount * sideVertCount * 6];
+        triangles = new int[sideVertCount * sideVertCount * 6];
         
         for (int ti = 0, vi = 0, x = 0; x < sideVertCount; ++vi, ++x) {
             for (int z = 0; z < sideVertCount; ti += 6, ++vi, ++z) {
@@ -135,6 +156,52 @@ public class TerrainScript : MonoBehaviour {
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
         normals = mesh.normals;
+    }
+
+    private void CreateGrass(){
+        grass_kernel = grassComputeShader.FindKernel("TerrainOffsets");
+        terrainVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vertices.Length, sizeof(float) * 3);
+        terrainVertexBuffer.SetData(vertices);
+        grassComputeShader.SetBuffer(grass_kernel, "_TerrainPositions", terrainVertexBuffer);
+
+
+        terrainTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, triangles.Length, sizeof(int));
+        terrainTriangleBuffer.SetData(triangles);
+        grassComputeShader.SetBuffer(grass_kernel, "_TerrainTriangles", terrainTriangleBuffer);
+        terrainTriangleCount = triangles.Length / 3;
+
+        Vector3[] grassVertices = grassMesh.vertices;
+        grassVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassVertices.Length, sizeof(float) * 3);
+        grassVertexBuffer.SetData(grassVertices);
+
+        int[] grassTriangles = grassMesh.triangles;
+        grassTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassTriangles.Length, sizeof(int));
+        grassTriangleBuffer.SetData(grassTriangles);
+
+        Vector2[] grassUVs = grassMesh.uv;
+        grassUVBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassUVs.Length, sizeof(float) * 2);
+        grassUVBuffer.SetData(grassUVs);
+
+        transformMatrixBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, terrainTriangleCount, sizeof(float) * 16);
+        grassComputeShader.SetBuffer(grass_kernel, "_TransformMatrices", transformMatrixBuffer);
+        
+        bounds = mesh.bounds;
+        bounds.center += transform.position;
+        bounds.Expand(minMaxBladeHeight.y);
+
+        grassComputeShader.SetMatrix("_TerrainObjectToWorld", transform.localToWorldMatrix);
+        grassComputeShader.SetInt("_TerrainTriangleCount", terrainTriangleCount);
+        grassComputeShader.SetVector("_MinMaxBladeHeight", minMaxBladeHeight);
+        grassComputeShader.SetFloat("_Scale", scale);
+        
+        uint threadGroupSize;
+        grassComputeShader.GetKernelThreadGroupSizes(grass_kernel, out threadGroupSize, out _, out _);
+        int threadGroups = Mathf.CeilToInt(terrainTriangleCount / threadGroupSize);
+
+        grassComputeShader.SetFloat("_GrassDensity", grassDensity);
+        grassComputeShader.SetFloat("_MinimumSlope", grassSlope);
+        grassComputeShader.SetFloat("_minHeight", minHeight);
+        grassComputeShader.Dispatch(grass_kernel, threadGroups, 1, 1);
     }
 
     private void CreateCollisionPlane() {
@@ -180,35 +247,36 @@ public class TerrainScript : MonoBehaviour {
     }
 
     void CreateMaterial() {
-        if (materialShader == null) return;
-        objMaterial = new Material(materialShader);
+        if (TerrainShader == null) return;
+        objMaterial = new Material(TerrainShader);
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         renderer.material = objMaterial;
     }
 
     int getGridDimFor(int kernelIdx) {
-        computeShader.GetKernelThreadGroupSizes(kernelIdx, out uint BLOCK_DIM, out _, out _);
+        heightmapComputeShader.GetKernelThreadGroupSizes(kernelIdx, out uint BLOCK_DIM, out _, out _);
         return (int)((resN + (BLOCK_DIM - 1)) / BLOCK_DIM);
     }
 
     void Start() {
-        FractalNoiseCS = computeShader.FindKernel("FractalNoiseCS");
+        FractalNoiseCS = heightmapComputeShader.FindKernel("FractalNoiseCS");
         resN = vert_num;
         GRID_DIM = getGridDimFor(FractalNoiseCS);
         computeResult = CreateRenderTex(resN, resN, 1, RenderTextureFormat.Default, true);
         octaveBuffer = new ComputeBuffer(OctaveCount, 3 * sizeof(float) + sizeof(int));
         heightBuffer = new ComputeBuffer(vert_num*vert_num, sizeof(float));
         SetSOctaveBuffers();
-        computeShader.SetTexture(FractalNoiseCS, "_Result", computeResult);
-        computeShader.SetBuffer(FractalNoiseCS, "_Collision", heightBuffer);
-        computeShader.SetInt("_OctaveCount", OctaveCount);
-        computeShader.SetInt("_N", resN);
-        computeShader.SetFloat("_BaseFrequency", baseFrequency);
-        computeShader.Dispatch(FractalNoiseCS, GRID_DIM, GRID_DIM, 1);
+        heightmapComputeShader.SetTexture(FractalNoiseCS, "_Result", computeResult);
+        heightmapComputeShader.SetBuffer(FractalNoiseCS, "_Collision", heightBuffer);
+        heightmapComputeShader.SetInt("_OctaveCount", OctaveCount);
+        heightmapComputeShader.SetInt("_N", resN);
+        heightmapComputeShader.SetFloat("_BaseFrequency", baseFrequency);
+        heightmapComputeShader.Dispatch(FractalNoiseCS, GRID_DIM, GRID_DIM, 1);
 
         heightBuffer.GetData(heightMap);
 
         CreatePlaneMesh();
+        CreateGrass();
         CreateCollisionPlane();
         CreateMaterial();
         objMaterial.SetTexture("_BaseTex", computeResult);
@@ -218,9 +286,21 @@ public class TerrainScript : MonoBehaviour {
     void Update() {
         if (updateOctave) {
             SetSOctaveBuffers();
-            computeShader.SetTexture(FractalNoiseCS, "_Result", computeResult);
-            computeShader.SetFloat("_BaseFrequency", baseFrequency);
-            computeShader.Dispatch(FractalNoiseCS, GRID_DIM, GRID_DIM, 1);
+            heightmapComputeShader.SetTexture(FractalNoiseCS, "_Result", computeResult);
+            heightmapComputeShader.SetFloat("_BaseFrequency", baseFrequency);
+            heightmapComputeShader.Dispatch(FractalNoiseCS, GRID_DIM, GRID_DIM, 1);
+            
+            grassComputeShader.SetVector("_MinMaxBladeHeight", minMaxBladeHeight);
+            grassComputeShader.SetFloat("_Scale", scale);
+
+            uint threadGroupSize;
+            grassComputeShader.GetKernelThreadGroupSizes(grass_kernel, out threadGroupSize, out _, out _);
+            int threadGroups = Mathf.CeilToInt(terrainTriangleCount / threadGroupSize);
+
+            grassComputeShader.SetFloat("_GrassDensity", grassDensity);
+            grassComputeShader.SetFloat("_MinimumSlope", grassSlope);
+            grassComputeShader.SetFloat("_minHeight", minHeight);
+            grassComputeShader.Dispatch(grass_kernel, threadGroups, 1, 1);
         }
         if(reCalcCollision){
             if (Cmesh != null) {
@@ -244,6 +324,17 @@ public class TerrainScript : MonoBehaviour {
         objMaterial.SetFloat("_SheenTint", sheenTint);
         objMaterial.SetFloat("_ClearCoat", clearCoat);
         objMaterial.SetFloat("_ClearCoatGloss", clearCoatGloss);
+    
+        RenderParams rp = new RenderParams(grassMaterial);
+        rp.worldBounds = bounds;
+        rp.matProps = new MaterialPropertyBlock();
+        rp.matProps.SetBuffer("_TransformMatrices", transformMatrixBuffer);
+        rp.matProps.SetBuffer("_Positions", grassVertexBuffer);
+        rp.matProps.SetBuffer("_UVs", grassUVBuffer);
+        Graphics.RenderPrimitivesIndexed(rp, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count, instanceCount: terrainTriangleCount);
+
+    
+    
     }
 
     void OnDisable() {
@@ -258,6 +349,7 @@ public class TerrainScript : MonoBehaviour {
             vertices = null;
             normals = null;
         }
+
         if (Cmesh != null) {
             Destroy(Cmesh);
             Cmesh = null;
@@ -267,5 +359,11 @@ public class TerrainScript : MonoBehaviour {
         Destroy(computeResult);
         octaveBuffer.Dispose();
         heightBuffer.Dispose();
+        terrainTriangleBuffer.Dispose();
+        terrainVertexBuffer.Dispose();
+        transformMatrixBuffer.Dispose();
+        grassTriangleBuffer.Dispose();
+        grassVertexBuffer.Dispose();
+        grassUVBuffer.Dispose();
     }
 }

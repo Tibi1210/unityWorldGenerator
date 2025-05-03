@@ -64,7 +64,7 @@ MonoBehaviour:
     m_Value: 10
   Wind:
     m_OverrideState: 1
-    m_Value: {x: 0.1, y: 0, z: 0}
+    m_Value: {x: 1, y: 0, z: 0}
   LightAbsorptionThroughCloud:
     m_OverrideState: 1
     m_Value: 0.25
@@ -98,7 +98,7 @@ MonoBehaviour:
     m_Value: 0.6
   DetailCloudWind:
     m_OverrideState: 1
-    m_Value: {x: 0.2, y: 0, z: 0}
+    m_Value: {x: 1, y: 0, z: 0}
   BlueNoiseTexure:
     m_OverrideState: 1
     m_Value: {fileID: 2800000, guid: 5ce43b827776d12409d6d0b7d026e346, type: 3}
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50801c06344704e4484b40082b5f46a6, type: 3}
   m_Name: SamplePostProcessSettings
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   on:
     m_OverrideState: 1
     m_Value: 2

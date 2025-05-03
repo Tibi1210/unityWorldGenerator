@@ -22,6 +22,8 @@ Shader "_Tibi/PostProcess/Clouds"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
+            #define PI 3.14159265358979323846
+
             struct VertexData{
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
@@ -156,7 +158,7 @@ Shader "_Tibi/PostProcess/Clouds"
             */
             float hg(float a, float g) {
                 float g2 = g*g;
-                return (1-g2) / (4*3.1415*pow(abs(1+g2-2*g*(a)), 1.5));
+                return (1-g2) / (4*PI*pow(abs(1+g2-2*g*(a)), 1.5));
             }
 
             /**

@@ -742,9 +742,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70798008b2ea7be40a055022ec138b30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materialShader: {fileID: 4800000, guid: 8bbcb05a32d30a7498c544bcbe260d2e, type: 3}
-  computeShader: {fileID: 7200000, guid: cc4e68c4b50c79f49b224ca55ae12982, type: 3}
-  updateOctave: 0
+  TerrainShader: {fileID: 4800000, guid: 8bbcb05a32d30a7498c544bcbe260d2e, type: 3}
+  heightmapComputeShader: {fileID: 7200000, guid: cc4e68c4b50c79f49b224ca55ae12982,
+    type: 3}
+  grassComputeShader: {fileID: 7200000, guid: 79323db9c44acc24ead246f8dd6b3cc2, type: 3}
+  grassMesh: {fileID: -2432090755550338912, guid: 77401c065dc3a6345b0a0784ce7ad914,
+    type: 3}
+  grassMaterial: {fileID: 2100000, guid: 0327ce8ba9c34bc4eb034edf6c304eaa, type: 2}
+  scale: 0.2
+  minMaxBladeHeight: {x: 15, y: 20}
+  grassDensity: 0.2
+  grassSlope: 0.2
+  minHeight: 30
+  updateOctave: 1
   baseFrequency: 1
   octave1:
     lacunarity: 3.13

@@ -85,7 +85,7 @@ float2x2 direction(float angle){
  * különböző frekvenciákkal és amplitúdókkal. Tárolja mind a végső zajértéket,
  * mind annak deriváltjait a kimeneti textúrában.
 */
-[numthreads(32, 32, 1)]
+[numthreads(16, 16, 1)]
 void FractalNoiseCS(uint3 id : SV_DispatchThreadID) {
     float2 uv = (id.xy + 0.5) / float2(_N, _N);
 
