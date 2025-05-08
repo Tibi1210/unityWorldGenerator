@@ -2,7 +2,7 @@ Shader "_Tibi/Terrain_LOD"{
     SubShader{
         Tags{
             "RenderType" = "Opaque"
-            "Queue" = "Geometry"
+            "Queue" = "Geometry+3000"
             "RenderPipeline" = "UniversalPipeline"
         }
 
@@ -29,14 +29,14 @@ Shader "_Tibi/Terrain_LOD"{
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
             /**
-             * @brief Checks if a triangle is completely below a specific camera clip plane
-             * @param p0 First vertex position in world space
-             * @param p1 Second vertex position in world space
-             * @param p2 Third vertex position in world space
-             * @param planeIndex Index of the clip plane to check against (0-5)
-             * @param bias Bias value to adjust the culling threshold
-             * @return True if the triangle is completely below the specified clip plane
-             */
+            * @brief Ellenőrzi, hogy egy háromszög teljesen a kamera vágósík alatt helyezkedik-e el
+            * @param p0 Az első csúcspont pozíciója a világtérben
+            * @param p1 A második csúcspont pozíciója a világtérben
+            * @param p2 A harmadik csúcspont pozíciója a világtérben
+            * @param planeIndex A vizsgálandó vágósík indexe (0-5)
+            * @param bias Eltolási érték a kivágási küszöbérték beállításához
+            * @return Igaz, ha a háromszög teljesen a megadott vágósík alatt helyezkedik el
+            */
             bool TriangleIsBelowClipPlane(float3 p0, float3 p1, float3 p2, int planeIndex, float bias){
                 float4 plane = unity_CameraWorldClipPlanes[planeIndex];
                 return dot(float4(p0, 1), plane) < 
@@ -46,13 +46,13 @@ Shader "_Tibi/Terrain_LOD"{
             }
 
             /**
-             * @brief Performs frustum culling for a triangle
-             * @param p0 First vertex position in world space
-             * @param p1 Second vertex position in world space
-             * @param p2 Third vertex position in world space
-             * @param bias Bias value to adjust the culling threshold
-             * @return True if the triangle should be culled (outside frustum)
-             */
+            * @brief Láthatósági gúla alapú kivágást végez egy háromszögre
+            * @param p0 Az első csúcspont pozíciója a világtérben
+            * @param p1 A második csúcspont pozíciója a világtérben
+            * @param p2 A harmadik csúcspont pozíciója a világtérben
+            * @param bias Eltolási érték a kivágási küszöbérték beállításához
+            * @return Igaz, ha a háromszöget ki kell vágni (láthatósági gúlán kívül esik)
+            */
             bool cullTriangle(float3 p0, float3 p1, float3 p2, float bias){
                 return TriangleIsBelowClipPlane(p0, p1, p2, 0, bias) ||
                        TriangleIsBelowClipPlane(p0, p1, p2, 1, bias) ||
@@ -84,11 +84,11 @@ Shader "_Tibi/Terrain_LOD"{
             };
 
             /**
-             * @brief Calculates tessellation factor based on edge length and view distance
-             * @param cp0 First control point in world space
-             * @param cp1 Second control point in world space
-             * @return Tessellation factor for the edge between cp0 and cp1
-             */
+            * @brief Kiszámítja a tesszelációs faktort az él hossza és a nézeti távolság alapján
+            * @param cp0 Első kontrollpont a világtérben
+            * @param cp1 Második kontrollpont a világtérben
+            * @return Tesszelációs faktor a cp0 és cp1 közötti élre
+            */
             float TessellationHeuristic(float3 cp0, float3 cp1){
                 float edgeLength = distance(cp0, cp1);
                 float3 edgeCenter = (cp0 + cp1) * 0.5;
@@ -108,10 +108,10 @@ Shader "_Tibi/Terrain_LOD"{
             CBUFFER_END
 
             /**
-             * @brief Vertex shader function for tessellation
-             * @param input Vertex input data
-             * @return Tessellation control point
-             */
+            * @brief Vertex shader függvény a tesszelációhoz
+            * @param input Vertex bemeneti adatok
+            * @return Tesszelációs kontrollpont
+            */
             TessellationControlPoint vert(VertexData input){
                 TessellationControlPoint output;
                 output.positionOS = input.positionOS;
@@ -120,10 +120,10 @@ Shader "_Tibi/Terrain_LOD"{
             }
 
             /**
-             * @brief Processes vertex data after tessellation
-             * @param input Vertex input data
-             * @return Processed vertex data with displacement applied
-             */
+            * @brief Vertex adatok feldolgozása a tesszeláció után
+            * @param input Vertex bemeneti adatok
+            * @return Feldolgozott vertex adatok
+            */
             v2f tessVert(VertexData input){
                 v2f output;
                 
@@ -134,7 +134,7 @@ Shader "_Tibi/Terrain_LOD"{
                 float4 displacement = SAMPLE_TEXTURE2D_ARRAY_LOD(_BaseTex, sampler_BaseTex, input.uv, 0, 0);
 
                 float4 p = input.positionOS;
-                //p.y = displacement.x * 100.0; 
+                p.y = displacement.x * 100.0; 
   
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(p);
 
@@ -156,10 +156,10 @@ Shader "_Tibi/Terrain_LOD"{
             }
 
             /**
-             * @brief Calculates tessellation factors for a patch
-             * @param patch Input patch of control points
-             * @return Tessellation factors for the patch
-             */
+            * @brief Kiszámítja a tesszelációs faktorokat egy primitívhez
+            * @param patch Primitívhez tartozó kontrollpontok
+            * @return Tesszelációs faktorok a primitívhez
+            */
             TessellationFactors PatchFunction(InputPatch<TessellationControlPoint, 3> patch){
                 VertexPositionInputs p0_input = GetVertexPositionInputs(patch[0].positionOS);
                 VertexPositionInputs p1_input = GetVertexPositionInputs(patch[1].positionOS);
@@ -184,10 +184,10 @@ Shader "_Tibi/Terrain_LOD"{
             }
 
             /**
-            * @brief Hull shader for tessellation
-            * @param patch Input patch of control points
-            * @param id Control point ID
-            * @return Control point for the specified ID
+            * @brief Hull shader a tesszelációhoz
+            * @param patch Primitívhez tartozó kontrollpontok
+            * @param id Kontrollpont azonosító
+            * @return Kontrollpont a megadott azonosítóhoz
             */
             [domain("tri")]
             [outputcontrolpoints(3)]
@@ -199,12 +199,12 @@ Shader "_Tibi/Terrain_LOD"{
             }
 
             /**
-             * @brief Domain shader for tessellation
-             * @param factors Tessellation factors
-             * @param patch Output patch of control points
-             * @param bcCoords Barycentric coordinates
-             * @return Processed vertex data for the tessellated point
-             */
+            * @brief Domain shader a tesszelációhoz
+            * @param factors Tesszelációs faktorok
+            * @param patch Primitívhez tartozó kontrollpontok
+            * @param bcCoords Baricentrikus koordináták
+            * @return Feldolgozott vertex adatok a tesszelált ponthoz
+            */
             [domain("tri")]
             v2f tessDomain(TessellationFactors factors, OutputPatch<TessellationControlPoint, 3> patch, float3 bcCoords : SV_DOMAINLOCATION){
                 VertexData data;
@@ -337,10 +337,10 @@ Shader "_Tibi/Terrain_LOD"{
             }
             
             /**
-             * @brief Fragment shader function
-             * @param input Fragment input data
-             * @return Final color for the fragment
-             */
+            * @brief Fragmens shader függvény
+            * @param input Fragmens bemeneti adatok
+            * @return Fragmenthez végső színe
+            */
             float4 frag(v2f input) : SV_TARGET{
 
                 float _MinY = 0; 

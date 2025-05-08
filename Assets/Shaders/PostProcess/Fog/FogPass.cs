@@ -16,7 +16,7 @@ public class FogPass : ScriptableRenderPass
         source = renderer.cameraColorTargetHandle;
         VolumeStack stack = VolumeManager.instance.stack;
         settings = stack.GetComponent<FogSettings>();
-        renderPassEvent = RenderPassEvent.BeforeRenderingSkybox;
+        renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
         if (settings != null && settings.IsActive())
         {
             material = new Material(Shader.Find("_Tibi/PostProcess/Fog"));

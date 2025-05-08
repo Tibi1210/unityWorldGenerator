@@ -3,29 +3,38 @@ using UnityEngine.Rendering;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class TerrainScript : MonoBehaviour {
+
+
+    public void ReceiveData(string data)
+    {
+        Debug.Log("Received: " + data);
+    }
+
+
     public Shader TerrainShader;
     public ComputeShader heightmapComputeShader;
     private int FractalNoiseCS;
 
 
     [Header("Vegetation Settings")]
-    public ComputeShader grassComputeShader;
-    public Mesh grassMesh;
-    public Material grassMaterial;
+    public ComputeShader vegetationComputeShader;
+    public Mesh vegetationMesh;
+    public Material vegetationMaterial;
     public float scale = 0.1f;
-    public Vector2 minMaxBladeHeight = new Vector2(0.5f, 1.5f);
+    public Vector2 minMaxHeight = new Vector2(0.5f, 1.5f);
     private Bounds bounds;
     private int terrainTriangleCount = 0;
     private GraphicsBuffer terrainTriangleBuffer;
     private GraphicsBuffer terrainVertexBuffer;
     private GraphicsBuffer transformMatrixBuffer;
-    private GraphicsBuffer grassTriangleBuffer;
-    private GraphicsBuffer grassVertexBuffer;
-    private GraphicsBuffer grassUVBuffer;
-    private int grass_kernel;
-    [Range(0.0f, 1.0f)] public float grassDensity = 1.0f;
-    [Range(0.0f, 1.0f)] public float grassSlope = 1.0f;
-    [Range(-50.0f, 50.0f)] public float minHeight =01.0f;
+    private GraphicsBuffer vegetationTriangleBuffer;
+    private GraphicsBuffer vegetationVertexBuffer;
+    private GraphicsBuffer vegetationUVBuffer;
+    private int vegetation_kernel;
+    [Range(0.0f, 1.0f)] public float vegetationDensity = 1.0f;
+    [Range(0.0f, 1.0f)] public float vegetationSlope = 1.0f;
+    [Range(-50.0f, 50.0f)] public float vegetationHeight = 1.0f;
+    private float maxheight=0;
 
 
 
@@ -129,7 +138,7 @@ public class TerrainScript : MonoBehaviour {
         
         for (int i = 0, x = 0; x <= sideVertCount; ++x) {
             for (int z = 0; z <= sideVertCount; ++z, ++i) {
-                vertices[i] = new Vector3(((float)x / sideVertCount * planeSize) - halfLength, heightMap[z*resN+x]*100, 
+                vertices[i] = new Vector3(((float)x / sideVertCount * planeSize) - halfLength, 0,//heightMap[z*resN+x]*100, 
                                           ((float)z / sideVertCount * planeSize) - halfLength);
                 uv[i] = new Vector2((float)x / sideVertCount, (float)z / sideVertCount);
                 tangents[i] = tangent;
@@ -157,58 +166,12 @@ public class TerrainScript : MonoBehaviour {
         mesh.RecalculateBounds();
         normals = mesh.normals;
     }
-
-    private void CreateGrass(){
-        grass_kernel = grassComputeShader.FindKernel("TerrainOffsets");
-        terrainVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vertices.Length, sizeof(float) * 3);
-        terrainVertexBuffer.SetData(vertices);
-        grassComputeShader.SetBuffer(grass_kernel, "_TerrainPositions", terrainVertexBuffer);
-
-
-        terrainTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, triangles.Length, sizeof(int));
-        terrainTriangleBuffer.SetData(triangles);
-        grassComputeShader.SetBuffer(grass_kernel, "_TerrainTriangles", terrainTriangleBuffer);
-        terrainTriangleCount = triangles.Length / 3;
-
-        Vector3[] grassVertices = grassMesh.vertices;
-        grassVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassVertices.Length, sizeof(float) * 3);
-        grassVertexBuffer.SetData(grassVertices);
-
-        int[] grassTriangles = grassMesh.triangles;
-        grassTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassTriangles.Length, sizeof(int));
-        grassTriangleBuffer.SetData(grassTriangles);
-
-        Vector2[] grassUVs = grassMesh.uv;
-        grassUVBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, grassUVs.Length, sizeof(float) * 2);
-        grassUVBuffer.SetData(grassUVs);
-
-        transformMatrixBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, terrainTriangleCount, sizeof(float) * 16);
-        grassComputeShader.SetBuffer(grass_kernel, "_TransformMatrices", transformMatrixBuffer);
-        
-        bounds = mesh.bounds;
-        bounds.center += transform.position;
-        bounds.Expand(minMaxBladeHeight.y);
-
-        grassComputeShader.SetMatrix("_TerrainObjectToWorld", transform.localToWorldMatrix);
-        grassComputeShader.SetInt("_TerrainTriangleCount", terrainTriangleCount);
-        grassComputeShader.SetVector("_MinMaxBladeHeight", minMaxBladeHeight);
-        grassComputeShader.SetFloat("_Scale", scale);
-        
-        uint threadGroupSize;
-        grassComputeShader.GetKernelThreadGroupSizes(grass_kernel, out threadGroupSize, out _, out _);
-        int threadGroups = Mathf.CeilToInt(terrainTriangleCount / threadGroupSize);
-
-        grassComputeShader.SetFloat("_GrassDensity", grassDensity);
-        grassComputeShader.SetFloat("_MinimumSlope", grassSlope);
-        grassComputeShader.SetFloat("_minHeight", minHeight);
-        grassComputeShader.Dispatch(grass_kernel, threadGroups, 1, 1);
-    }
-
     private void CreateCollisionPlane() {
         Cmesh = new Mesh();
         Cmesh.name = "CollisionPlane";
 
-        //heightBuffer.GetData(heightMap);
+        heightBuffer.GetData(heightMap);
+        maxheight=0;
 
         vertices = new Vector3[vert_num * vert_num];
         Vector2[] uv = new Vector2[vertices.Length];
@@ -219,6 +182,11 @@ public class TerrainScript : MonoBehaviour {
             for (int z = 0; z <= sideVertCount; ++z, ++i) {
                 vertices[i] = new Vector3(((float)x / sideVertCount * planeSize) - halfLength, heightMap[z*resN+x]*100, 
                                           ((float)z / sideVertCount * planeSize) - halfLength);
+                                          if (maxheight<heightMap[z*resN+x]*100)
+                                          {
+                                            maxheight=heightMap[z*resN+x]*100;
+                                          }
+
                 uv[i] = new Vector2((float)x / sideVertCount, (float)z / sideVertCount);
                 tangents[i] = tangent;
             }
@@ -227,7 +195,7 @@ public class TerrainScript : MonoBehaviour {
         Cmesh.vertices = vertices;
         Cmesh.uv = uv;
         Cmesh.tangents = tangents;
-        int[] triangles = new int[sideVertCount * sideVertCount * 6];
+        triangles = new int[sideVertCount * sideVertCount * 6];
         
         for (int ti = 0, vi = 0, x = 0; x < sideVertCount; ++vi, ++x) {
             for (int z = 0; z < sideVertCount; ti += 6, ++vi, ++z) {
@@ -245,6 +213,53 @@ public class TerrainScript : MonoBehaviour {
         Cmesh.RecalculateBounds();
         GetComponent<MeshCollider>().sharedMesh = Cmesh;
     }
+
+        private void Createvegetation(){
+        vegetation_kernel = vegetationComputeShader.FindKernel("TerrainOffsets");
+        terrainVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vertices.Length, sizeof(float) * 3);
+        terrainVertexBuffer.SetData(vertices);
+        vegetationComputeShader.SetBuffer(vegetation_kernel, "_TerrainPositions", terrainVertexBuffer);
+
+
+        terrainTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, triangles.Length, sizeof(int));
+        terrainTriangleBuffer.SetData(triangles);
+        vegetationComputeShader.SetBuffer(vegetation_kernel, "_TerrainTriangles", terrainTriangleBuffer);
+        terrainTriangleCount = triangles.Length / 3;
+
+        Vector3[] vegetationVertices = vegetationMesh.vertices;
+        vegetationVertexBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vegetationVertices.Length, sizeof(float) * 3);
+        vegetationVertexBuffer.SetData(vegetationVertices);
+
+        int[] vegetationTriangles = vegetationMesh.triangles;
+        vegetationTriangleBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vegetationTriangles.Length, sizeof(int));
+        vegetationTriangleBuffer.SetData(vegetationTriangles);
+
+        Vector2[] vegetationUVs = vegetationMesh.uv;
+        vegetationUVBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, vegetationUVs.Length, sizeof(float) * 2);
+        vegetationUVBuffer.SetData(vegetationUVs);
+
+        transformMatrixBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, terrainTriangleCount, sizeof(float) * 16);
+        vegetationComputeShader.SetBuffer(vegetation_kernel, "_TransformMatrices", transformMatrixBuffer);
+        
+        bounds = mesh.bounds;
+        bounds.center += transform.position;
+        bounds.Expand(minMaxHeight.y);
+
+        vegetationComputeShader.SetMatrix("_TerrainObjectToWorld", transform.localToWorldMatrix);
+        vegetationComputeShader.SetInt("_TerrainTriangleCount", terrainTriangleCount);
+        vegetationComputeShader.SetVector("_MinMaxHeight", minMaxHeight);
+        vegetationComputeShader.SetFloat("_Scale", scale);
+        
+        uint threadGroupSize;
+        vegetationComputeShader.GetKernelThreadGroupSizes(vegetation_kernel, out threadGroupSize, out _, out _);
+        int threadGroups = Mathf.CeilToInt(terrainTriangleCount / threadGroupSize);
+
+        vegetationComputeShader.SetFloat("_vegetationDensity", vegetationDensity);
+        vegetationComputeShader.SetFloat("_MinimumSlope", vegetationSlope);
+        vegetationComputeShader.SetFloat("_minHeight", vegetationHeight/maxheight);
+        vegetationComputeShader.Dispatch(vegetation_kernel, threadGroups, 1, 1);
+    }
+
 
     void CreateMaterial() {
         if (TerrainShader == null) return;
@@ -276,8 +291,8 @@ public class TerrainScript : MonoBehaviour {
         heightBuffer.GetData(heightMap);
 
         CreatePlaneMesh();
-        CreateGrass();
         CreateCollisionPlane();
+        Createvegetation();
         CreateMaterial();
         objMaterial.SetTexture("_BaseTex", computeResult);
 
@@ -290,17 +305,17 @@ public class TerrainScript : MonoBehaviour {
             heightmapComputeShader.SetFloat("_BaseFrequency", baseFrequency);
             heightmapComputeShader.Dispatch(FractalNoiseCS, GRID_DIM, GRID_DIM, 1);
             
-            grassComputeShader.SetVector("_MinMaxBladeHeight", minMaxBladeHeight);
-            grassComputeShader.SetFloat("_Scale", scale);
+            vegetationComputeShader.SetVector("_MinMaxHeight", minMaxHeight);
+            vegetationComputeShader.SetFloat("_Scale", scale);
 
             uint threadGroupSize;
-            grassComputeShader.GetKernelThreadGroupSizes(grass_kernel, out threadGroupSize, out _, out _);
+            vegetationComputeShader.GetKernelThreadGroupSizes(vegetation_kernel, out threadGroupSize, out _, out _);
             int threadGroups = Mathf.CeilToInt(terrainTriangleCount / threadGroupSize);
 
-            grassComputeShader.SetFloat("_GrassDensity", grassDensity);
-            grassComputeShader.SetFloat("_MinimumSlope", grassSlope);
-            grassComputeShader.SetFloat("_minHeight", minHeight);
-            grassComputeShader.Dispatch(grass_kernel, threadGroups, 1, 1);
+            vegetationComputeShader.SetFloat("_Density", vegetationDensity);
+            vegetationComputeShader.SetFloat("_MinimumSlope", vegetationSlope);
+            vegetationComputeShader.SetFloat("_minHeight", vegetationHeight);
+            vegetationComputeShader.Dispatch(vegetation_kernel, threadGroups, 1, 1);
         }
         if(reCalcCollision){
             if (Cmesh != null) {
@@ -311,6 +326,7 @@ public class TerrainScript : MonoBehaviour {
             }
             CreateCollisionPlane();
             reCalcCollision = false;
+            Createvegetation();
         }
         objMaterial.SetVector("_TopColor", ambient);
         objMaterial.SetVector("_BotColor", ambient2);
@@ -325,13 +341,13 @@ public class TerrainScript : MonoBehaviour {
         objMaterial.SetFloat("_ClearCoat", clearCoat);
         objMaterial.SetFloat("_ClearCoatGloss", clearCoatGloss);
     
-        RenderParams rp = new RenderParams(grassMaterial);
+        RenderParams rp = new RenderParams(vegetationMaterial);
         rp.worldBounds = bounds;
         rp.matProps = new MaterialPropertyBlock();
         rp.matProps.SetBuffer("_TransformMatrices", transformMatrixBuffer);
-        rp.matProps.SetBuffer("_Positions", grassVertexBuffer);
-        rp.matProps.SetBuffer("_UVs", grassUVBuffer);
-        Graphics.RenderPrimitivesIndexed(rp, MeshTopology.Triangles, grassTriangleBuffer, grassTriangleBuffer.count, instanceCount: terrainTriangleCount);
+        rp.matProps.SetBuffer("_Positions", vegetationVertexBuffer);
+        rp.matProps.SetBuffer("_UVs", vegetationUVBuffer);
+        Graphics.RenderPrimitivesIndexed(rp, MeshTopology.Triangles, vegetationTriangleBuffer, vegetationTriangleBuffer.count, instanceCount: terrainTriangleCount);
 
     
     
@@ -362,8 +378,8 @@ public class TerrainScript : MonoBehaviour {
         terrainTriangleBuffer.Dispose();
         terrainVertexBuffer.Dispose();
         transformMatrixBuffer.Dispose();
-        grassTriangleBuffer.Dispose();
-        grassVertexBuffer.Dispose();
-        grassUVBuffer.Dispose();
+        vegetationTriangleBuffer.Dispose();
+        vegetationVertexBuffer.Dispose();
+        vegetationUVBuffer.Dispose();
     }
 }

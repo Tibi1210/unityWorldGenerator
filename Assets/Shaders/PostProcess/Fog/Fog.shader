@@ -88,7 +88,8 @@ Shader "_Tibi/PostProcess/Fog"
 
                 float4 fogOutput = lerp(lerp(_color2, _color ,saturate(fogFactor)), col, saturate(fogFactor));
 
-                return fogOutput;
+                //return fogOutput;
+                return float4(depth,depth,depth, 1.0);
             }
             ENDHLSL
         }

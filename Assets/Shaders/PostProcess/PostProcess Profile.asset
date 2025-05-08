@@ -64,7 +64,7 @@ MonoBehaviour:
     m_Value: 10
   Wind:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0, z: 0}
+    m_Value: {x: 0.1, y: 0, z: 0.2}
   LightAbsorptionThroughCloud:
     m_OverrideState: 1
     m_Value: 0.25
@@ -98,7 +98,7 @@ MonoBehaviour:
     m_Value: 0.6
   DetailCloudWind:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0, z: 0}
+    m_Value: {x: 0.2, y: 0, z: 0.1}
   BlueNoiseTexure:
     m_OverrideState: 1
     m_Value: {fileID: 2800000, guid: 5ce43b827776d12409d6d0b7d026e346, type: 3}
