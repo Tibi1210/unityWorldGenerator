@@ -1,4 +1,10 @@
 Shader "_Tibi/Terrain_LOD"{
+
+    Properties{
+        _TangentTex ("Tangent", 2D) = "" {}
+        _NormalStrength ("Normal Strength", Range(0.0, 3.0)) = 0.0
+    }
+
     SubShader{
         Tags{
             "RenderType" = "Opaque"
@@ -70,7 +76,7 @@ Shader "_Tibi/Terrain_LOD"{
                 float3 positionWS : TEXCOORD1;
                 float2 uv : TEXCOORD0;
                 float3 normal: TEXCOORD2;
-                float3 tangent: TEXCOORD3;
+                float4 tangent: TEXCOORD3;
             };
 
             struct TessellationControlPoint{
@@ -97,13 +103,20 @@ Shader "_Tibi/Terrain_LOD"{
                 return edgeLength * _ScreenParams.y / (EDGE_LEN * (pow(viewDistance * 0.5, 1.2)));
             }
 
-            TEXTURE2D_ARRAY(_BaseTex);
-            SAMPLER(sampler_BaseTex);
+
+            TEXTURE2D(_AlbedoTex);
+            SAMPLER(sampler_AlbedoTex);
+			TEXTURE2D(_NormalTex);
+            SAMPLER(sampler_NormalTex);
+			TEXTURE2D(_TangentTex);
+            SAMPLER(sampler_TangentTex);
+            TEXTURE2D_ARRAY(_HeightTex);
+            SAMPLER(sampler_HeightTex);
 
             CBUFFER_START(UnityPerMaterial)
-                float4 _BaseTex_ST;
+                float4 _HeightTex_ST, _AlbedoTex_ST, _NormalTex_ST, _TangentTex_ST;
                 float4 _TopColor, _BotColor;
-                float _Roughness, _Metallic, _Subsurface, _Specular, _SpecularTint, _Anisotropic, _Sheen, _SheenTint, _ClearCoat, _ClearCoatGloss;
+                float _NormalStrength, _UV, _Roughness, _Metallic, _Subsurface, _Specular, _SpecularTint, _Anisotropic, _Sheen, _SheenTint, _ClearCoat, _ClearCoatGloss;
                 int _isNormal;
             CBUFFER_END
 
@@ -128,10 +141,10 @@ Shader "_Tibi/Terrain_LOD"{
                 v2f output;
                 
                 float2 uv = input.uv * 5.0;
-                output.uv = TRANSFORM_TEX(uv, _BaseTex);
+                output.uv = TRANSFORM_TEX(uv, _HeightTex);
 
                 //float4 displacement = noised(float3(uv, 1.0));
-                float4 displacement = SAMPLE_TEXTURE2D_ARRAY_LOD(_BaseTex, sampler_BaseTex, input.uv, 0, 0);
+                float4 displacement = SAMPLE_TEXTURE2D_ARRAY_LOD(_HeightTex, sampler_HeightTex, input.uv, 0, 0);
 
                 float4 p = input.positionOS;
                 p.y = displacement.x * 100.0; 
@@ -150,7 +163,7 @@ Shader "_Tibi/Terrain_LOD"{
 
                 VertexNormalInputs normalInput = GetVertexNormalInputs(normal);
                 output.normal = normalInput.normalWS;
-                output.tangent = normalInput.tangentWS;
+                output.tangent = float4(normalInput.tangentWS, 1.0);
 
                 return output;
             }
@@ -343,30 +356,53 @@ Shader "_Tibi/Terrain_LOD"{
             */
             float4 frag(v2f input) : SV_TARGET{
 
-                float _MinY = 0; 
-                float _MaxY = 100;
+                float2 uv = input.uv;
+                
+                float3 unnormalizedNormalWS = input.normal;
+                float renormFactor = 1.0f / length(unnormalizedNormalWS);
 
-                // shading modell
-                float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
+                float3x3 worldToTangent;
+                float3 bitangent = cross(unnormalizedNormalWS, input.tangent.xyz) * input.tangent.w;
+                worldToTangent[0] = input.tangent.xyz * renormFactor;
+                worldToTangent[1] = bitangent * renormFactor;
+                worldToTangent[2] = unnormalizedNormalWS * renormFactor;
+
+				float4 packedNormal = SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, uv*_UV);
+                packedNormal.w *= packedNormal.x;
+
+                float3 N;
+                N.xy = packedNormal.wy * 2.0f - 1.0f;
+                N.xy *= _NormalStrength;
+                N.z = sqrt(1.0f - saturate(dot(N.xy, N.xy)));
+                N = mul(N, worldToTangent);
+
+                float3 T;
+				
+                T.xy = SAMPLE_TEXTURE2D(_TangentTex, sampler_TangentTex, uv*_UV).wy * 2 - 1;
+                T.z = sqrt(1 - saturate(dot(T.xy, T.xy)));
+
+                T = mul(lerp(float3(1.0f, 0.0f, 0.0f), T, saturate(_NormalStrength)), worldToTangent);
+                
+                float3 albedo = SAMPLE_TEXTURE2D(_AlbedoTex, sampler_AlbedoTex, uv*_UV).rgb;
+				
+				float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
                 Light light = GetMainLight(shadowCoord);
                 float3 lightDir = light.direction;
                 float3 viewDir = GetWorldSpaceNormalizeViewDir(input.positionWS);
-                float3 halfwayDir = normalize(lightDir + viewDir);
 
-                float4 tangent = float4(input.tangent, 1.0);
-                float3 bitangent = cross(input.normal, tangent);
-                tangent.w = sign(dot(bitangent, cross(input.normal, tangent)));
-                float3 Y = normalize(cross(input.normal, tangent) * tangent.w);
+                float3 L = normalize(light.direction);
+                float3 V = normalize(viewDir);
+                float3 X = normalize(T);
+                float3 Y = normalize(cross(N, T) * input.tangent.w);
 
-                BRDFResults reflection = BRDF(_TopColor, lightDir, viewDir, input.normal, tangent, Y);
-                float3 topColor = light.color.rgb * (reflection.diffuse + reflection.specular + reflection.clearcoat);
-                
-                reflection = BRDF(_BotColor, lightDir, viewDir, input.normal, tangent, Y);
-                float3 botColor = light.color.rgb * (reflection.diffuse + reflection.specular + reflection.clearcoat);
+                BRDFResults reflection = BRDF(albedo, L, V, N, X, Y);
 
-                float normalizedY = saturate((input.positionWS.y - _MinY) / (_MaxY - _MinY));
+                float3 output = light.color * (reflection.diffuse + reflection.specular + reflection.clearcoat);
+                output *= DotClamped(N, L);
 
-                return float4(lerp(botColor, topColor, normalizedY),1.0);
+                return float4(max(0.0f, output), 1.0f);
+
+
   
             }
 

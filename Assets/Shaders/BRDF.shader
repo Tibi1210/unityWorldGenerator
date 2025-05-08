@@ -1,4 +1,4 @@
-Shader "_Tibi/Lighting/DisneyBRDF"{
+Shader "_Tibi/Lighting/BRDF"{
     
     Properties{
         _AlbedoTex ("Albedo", 2D) = "" {}
@@ -130,7 +130,7 @@ Shader "_Tibi/Lighting/DisneyBRDF"{
 				float3 clearcoat;
 			};
 	
-			BRDFResults DisneyBRDF(float3 baseColor, float3 L, float3 V, float3 N, float3 X, float3 Y) {
+			BRDFResults BRDF(float3 baseColor, float3 L, float3 V, float3 N, float3 X, float3 Y) {
 				BRDFResults output;
 				output.diffuse = 0.0f;
 				output.specular = 0.0f;
@@ -244,7 +244,7 @@ Shader "_Tibi/Lighting/DisneyBRDF"{
                 float3 X = normalize(T);
                 float3 Y = normalize(cross(N, T) * i.tangent.w);
 
-                BRDFResults reflection = DisneyBRDF(albedo, L, V, N, X, Y);
+                BRDFResults reflection = BRDF(albedo, L, V, N, X, Y);
 
                 float3 output = light.color * (reflection.diffuse + reflection.specular + reflection.clearcoat);
                 output *= DotClamped(N, L);

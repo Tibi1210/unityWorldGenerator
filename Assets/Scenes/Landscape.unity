@@ -616,40 +616,41 @@ MonoBehaviour:
   vegetationMaterial: {fileID: 2100000, guid: 0327ce8ba9c34bc4eb034edf6c304eaa, type: 2}
   scale: 0.3
   minMaxHeight: {x: 10, y: 20}
-  vegetationDensity: 0.662
-  vegetationSlope: 0.659
-  vegetationHeight: 1
+  vegetationDensity: 0.32038546
+  vegetationSlope: 0.700448
+  vegetationHeight: 21.30228
   updateOctave: 1
   baseFrequency: 1
   octave1:
-    lacunarity: 1.6406537
-    persistence: 0.6028465
-    rotation: 252
-    shift: 69.5029
+    lacunarity: 3.1817653
+    persistence: 0.5320289
+    rotation: 334
+    shift: 65.71613
   octave2:
-    lacunarity: 4.073451
-    persistence: 0.62987673
-    rotation: 43
-    shift: 11.769688
+    lacunarity: 3.8894894
+    persistence: 0.26085585
+    rotation: 278
+    shift: 86.281624
   octave3:
-    lacunarity: 8.621676
-    persistence: 0.017729107
-    rotation: 323
-    shift: 45.470673
+    lacunarity: 3.4653919
+    persistence: 0.07444678
+    rotation: 322
+    shift: 53.653687
   octave4:
-    lacunarity: 8.061042
-    persistence: 0.042287618
-    rotation: 27
-    shift: 95.90995
+    lacunarity: 4.153862
+    persistence: 0
+    rotation: 53
+    shift: 38.700382
   reCalcCollision: 0
-  ambient: {r: 0.049706575, g: 0.84687346, b: 0, a: 0}
-  ambient2: {r: 0.12213881, g: 0.056128494, b: 0.046665095, a: 0}
+  albedoTex: {fileID: 2800000, guid: bfed924ab5a51cb479a28a18dd85e66d, type: 3}
+  normalTex: {fileID: 2800000, guid: 82be319025f087547b693ae352ffa535, type: 3}
+  uvMap: 1
   metalic: 0
   roughness: 1
-  subsurface: 0
+  subsurface: 1
   specular: 0
   specularTint: 0
-  anisotropic: 1
+  anisotropic: 0
   sheen: 0
   sheenTint: 0
   clearCoat: 0

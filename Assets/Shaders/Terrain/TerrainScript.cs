@@ -83,8 +83,9 @@ public class TerrainScript : MonoBehaviour {
     public bool reCalcCollision = false;
 
     [Header("Material Settings")]
-    [ColorUsageAttribute(false, true)] public Color ambient;
-    [ColorUsageAttribute(false, true)] public Color ambient2;
+    public Texture2D albedoTex;
+    public Texture2D normalTex;
+    [Range(0.0f, 20.0f)]public float uvMap = 20.0f;
     [Range(0.0f, 1.0f)] public float metalic = 1;
     [Range(0.0f, 1.0f)] public float roughness = 1;
     [Range(0.0f, 1.0f)] public float subsurface = 1;
@@ -294,7 +295,7 @@ public class TerrainScript : MonoBehaviour {
         CreateCollisionPlane();
         Createvegetation();
         CreateMaterial();
-        objMaterial.SetTexture("_BaseTex", computeResult);
+        objMaterial.SetTexture("_HeightTex", computeResult);
 
     }
 
@@ -328,8 +329,9 @@ public class TerrainScript : MonoBehaviour {
             reCalcCollision = false;
             Createvegetation();
         }
-        objMaterial.SetVector("_TopColor", ambient);
-        objMaterial.SetVector("_BotColor", ambient2);
+        objMaterial.SetTexture("_AlbedoTex", albedoTex);
+        objMaterial.SetTexture("_NormalTex", normalTex);
+        objMaterial.SetFloat("_UV", uvMap);
         objMaterial.SetFloat("_Metalic", metalic);
         objMaterial.SetFloat("_Subsurface", subsurface);
         objMaterial.SetFloat("_Specular", specular);
