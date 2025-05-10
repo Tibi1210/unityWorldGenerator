@@ -20,7 +20,6 @@ StructuredBuffer<OctaveParams> _Octaves;
  * @param p Bemeneti koordináták
  * @return Egy pszeudo-véletlenszerű vektor, komponensei a [-1,1] tartományban
  * 
- * Forrás: https://www.shadertoy.com/view/4dffRH
 */
 float3 hash( float3 p ){                        
 	p = float3( dot(p,float3(127.1,311.7, 74.7)),
@@ -35,7 +34,6 @@ float3 hash( float3 p ){
  * @param x A 3D bemeneti koordináták
  * @return Zajértékek az x komponensben és a deriváltak (dx, dy, dz) az yzw komponensekben
  * 
- * Forrás: https://www.shadertoy.com/view/4dffRH
 */
 float4 noised(float3 x){
 

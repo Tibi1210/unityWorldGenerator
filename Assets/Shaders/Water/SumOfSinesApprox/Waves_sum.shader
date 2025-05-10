@@ -258,8 +258,6 @@ Shader "_Tibi/wave_sum"{
             half DotClamped(half3 a, half3 b){
                 return saturate(dot(a, b));
             }
-            ///////////////////////////////////////////BRDF///////////////////////////////////////////
-            // Forrás: https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf
             
             float luminance(float3 color){
                 return dot(color, float3(0.299f, 0.587f, 0.114f));

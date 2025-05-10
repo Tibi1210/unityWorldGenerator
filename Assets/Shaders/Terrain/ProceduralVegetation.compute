@@ -12,7 +12,7 @@ uniform float _Density;
 uniform float _MinimumSlope;
 uniform float _minHeight;
 
-#define TWO_PI 6.28318530718f
+#define TWO_PI 6.28318530718
 float randomRange(float2 seed, float min, float max){
     float randnum = frac(sin(dot(seed, float2(12.9898, 78.233))) * 43758.5453);
     return lerp(min, max, randnum);
@@ -53,7 +53,7 @@ void TerrainOffsets(uint3 id : SV_DispatchThreadID)
 
     
     float3 triangleNormal = normalize(cross(posB - posA, posC - posA));
-    float slope = dot(triangleNormal, float3(0, 1, 0)); // 1 is flat, 0 is vertical
+    float slope = dot(triangleNormal, float3(0, 1, 0)); // 1 vízszintes, 0 függőleges
 
     if (slope < _MinimumSlope || _minHeight > triangleCenterPos.y) {
         _TransformMatrices[id.x] = float4x4(0, 0, 0, 0,

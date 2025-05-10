@@ -89,11 +89,11 @@ Shader "_Tibi/Lighting/BRDF"{
 			}
 	
 			float luminance(float3 color) {
-				return dot(color, float3(0.299f, 0.587f, 0.114f));
+				return dot(color, float3(0.299, 0.587, 0.114));
 			}
 	
 			float SchlickFresnel(float x) {
-				x = saturate(1.0f - x);
+				x = saturate(1.0 - x);
 				float x2 = x * x;
 	
 				return x2 * x2 * x;
@@ -102,8 +102,8 @@ Shader "_Tibi/Lighting/BRDF"{
 			// Isotropic Generalized Trowbridge Reitz
 			float GTR1(float ndoth, float a) {
 				float a2 = a * a;
-				float t = 1.0f + (a2 - 1.0f) * ndoth * ndoth;
-				return (a2 - 1.0f) / (PI * log(a2) * t);
+				float t = 1.0 + (a2 - 1.0) * ndoth * ndoth;
+				return (a2 - 1.0) / (PI * log(a2) * t);
 			}
 	
 			// Anisotropic Generalized Trowbridge Reitz
@@ -116,7 +116,7 @@ Shader "_Tibi/Lighting/BRDF"{
 				float a = ndotv * sqrt(alphaSquared + ndotl * (ndotl - alphaSquared * ndotl));
 				float b = ndotl * sqrt(alphaSquared + ndotv * (ndotv - alphaSquared * ndotv));
 	
-				return 0.5f / (a + b);
+				return 0.5 / (a + b);
 			}
 	
 			// Anisotropic Geometric Attenuation Function for GGX
@@ -132,9 +132,9 @@ Shader "_Tibi/Lighting/BRDF"{
 	
 			BRDFResults BRDF(float3 baseColor, float3 L, float3 V, float3 N, float3 X, float3 Y) {
 				BRDFResults output;
-				output.diffuse = 0.0f;
-				output.specular = 0.0f;
-				output.clearcoat = 0.0f;
+				output.diffuse = 0.0;
+				output.specular = 0.0;
+				output.clearcoat = 0.0;
 	
 				float3 H = normalize(L + V);
 				float ndotl = DotClamped(N, L);
@@ -146,9 +146,9 @@ Shader "_Tibi/Lighting/BRDF"{
 	
 				float Cdlum = luminance(surfaceColor);
 	
-				float3 Ctint = Cdlum > 0.0f ? surfaceColor / Cdlum : 1.0f;
-				float3 Cspec0 = lerp(_Specular * 0.08f * lerp(1.0f, Ctint, _SpecularTint), surfaceColor, _Metallic);
-				float3 Csheen = lerp(1.0f, Ctint, _SheenTint);
+				float3 Ctint = Cdlum > 0.0 ? surfaceColor / Cdlum : 1.0;
+				float3 Cspec0 = lerp(_Specular * 0.08 * lerp(1.0, Ctint, _SpecularTint), surfaceColor, _Metallic);
+				float3 Csheen = lerp(1.0, Ctint, _SheenTint);
 	
 	
 				// Disney Diffuse
@@ -156,47 +156,47 @@ Shader "_Tibi/Lighting/BRDF"{
 				float FV = SchlickFresnel(ndotv);
 	
 				float Fss90 = ldoth * ldoth * _Roughness;
-				float Fd90 = 0.5f + 2.0f * Fss90;
+				float Fd90 = 0.5 + 2.0 * Fss90;
 	
-				float Fd = lerp(1.0f, Fd90, FL) * lerp(1.0f, Fd90, FV);
+				float Fd = lerp(1.0, Fd90, FL) * lerp(1.0, Fd90, FV);
 	
 				// Subsurface Diffuse
-				float Fss = lerp(1.0f, Fss90, FL) * lerp(1.0f, Fss90, FV);
-				float ss = 1.25f * (Fss * (rcp(ndotl + ndotv) - 0.5f) + 0.5f);
+				float Fss = lerp(1.0, Fss90, FL) * lerp(1.0, Fss90, FV);
+				float ss = 1.25 * (Fss * (rcp(ndotl + ndotv) - 0.5) + 0.5);
 	
 				// Specular
 				float alpha = _Roughness;
 				float alphaSquared = alpha * alpha;
 	
 				// Anisotropic Microfacet Normal Distribution
-				float aspectRatio = sqrt(1.0f - _Anisotropic * 0.9f);
-				float alphaX = max(0.001f, alphaSquared / aspectRatio);
-				float alphaY = max(0.001f, alphaSquared * aspectRatio);
+				float aspectRatio = sqrt(1.0 - _Anisotropic * 0.9);
+				float alphaX = max(0.001, alphaSquared / aspectRatio);
+				float alphaY = max(0.001, alphaSquared * aspectRatio);
 				float Ds = AnisotropicGTR2(ndoth, dot(H, X), dot(H, Y), alphaX, alphaY);
 	
 				// Geometric Attenuation
 				float GalphaSquared = sqr(0.5f + _Roughness * 0.5f);
-				float GalphaX = max(0.001f, GalphaSquared / aspectRatio);
-				float GalphaY = max(0.001f, GalphaSquared * aspectRatio);
+				float GalphaX = max(0.001, GalphaSquared / aspectRatio);
+				float GalphaY = max(0.001, GalphaSquared * aspectRatio);
 				float G = AnisotropicSmithGGX(ndotl, dot(L, X), dot(L, Y), GalphaX, GalphaY);
 				G *= AnisotropicSmithGGX(ndotv, dot(V, X), dot (V, Y), GalphaX, GalphaY);  
 	
 				// Fresnel Reflectance
 				float FH = SchlickFresnel(ldoth);
-				float3 F = lerp(Cspec0, 1.0f, FH);
+				float3 F = lerp(Cspec0, 1.0, FH);
 	
 				// Sheen
 				float3 Fsheen = FH * _Sheen * Csheen;
 	
 				// Clearcoat
-				float Dr = GTR1(ndoth, lerp(0.1f, 0.001f, _ClearCoatGloss));
-				float Fr = lerp(0.04, 1.0f, FH);
-				float Gr = SmithGGX(ndotl, ndotv, 0.25f);
+				float Dr = GTR1(ndoth, lerp(0.1, 0.001, _ClearCoatGloss));
+				float Fr = lerp(0.04, 1.0, FH);
+				float Gr = SmithGGX(ndotl, ndotv, 0.25);
 	
 				
-				output.diffuse = (1.0f / PI) * (lerp(Fd, ss, _Subsurface) * surfaceColor + Fsheen) * (1 - _Metallic);
+				output.diffuse = (1.0 / PI) * (lerp(Fd, ss, _Subsurface) * surfaceColor + Fsheen) * (1 - _Metallic);
 				output.specular = Ds * F * G;
-				output.clearcoat = 0.25f * _ClearCoat * Gr * Fr * Dr;
+				output.clearcoat = 0.25 * _ClearCoat * Gr * Fr * Dr;
 	
 				return output;
 			}
@@ -208,7 +208,7 @@ Shader "_Tibi/Lighting/BRDF"{
 				float2 uv = i.uv;
                 
                 float3 unnormalizedNormalWS = i.normal;
-                float renormFactor = 1.0f / length(unnormalizedNormalWS);
+                float renormFactor = 1.0 / length(unnormalizedNormalWS);
 
                 float3x3 worldToTangent;
                 float3 bitangent = cross(unnormalizedNormalWS, i.tangent.xyz) * i.tangent.w;
@@ -220,9 +220,9 @@ Shader "_Tibi/Lighting/BRDF"{
                 packedNormal.w *= packedNormal.x;
 
                 float3 N;
-                N.xy = packedNormal.wy * 2.0f - 1.0f;
+                N.xy = packedNormal.wy * 2.0 - 1.0;
                 N.xy *= _NormalStrength;
-                N.z = sqrt(1.0f - saturate(dot(N.xy, N.xy)));
+                N.z = sqrt(1.0 - saturate(dot(N.xy, N.xy)));
                 N = mul(N, worldToTangent);
 
                 float3 T;
@@ -230,7 +230,7 @@ Shader "_Tibi/Lighting/BRDF"{
                 T.xy = SAMPLE_TEXTURE2D(_TangentTex, sampler_TangentTex, uv).wy * 2 - 1;
                 T.z = sqrt(1 - saturate(dot(T.xy, T.xy)));
 
-                T = mul(lerp(float3(1.0f, 0.0f, 0.0f), T, saturate(_NormalStrength)), worldToTangent);
+                T = mul(lerp(float3(1.0, 0.0, 0.0), T, saturate(_NormalStrength)), worldToTangent);
                 
                 float3 albedo = SAMPLE_TEXTURE2D(_AlbedoTex, sampler_AlbedoTex, uv).rgb;
 				
@@ -249,7 +249,7 @@ Shader "_Tibi/Lighting/BRDF"{
                 float3 output = light.color * (reflection.diffuse + reflection.specular + reflection.clearcoat);
                 output *= DotClamped(N, L);
 
-                return float4(max(0.0f, output), 1.0f);
+                return float4(max(0.0, output), 1.0);
 
 			}
 

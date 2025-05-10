@@ -229,9 +229,6 @@ Shader "Custom/FFTWater_BRDF"{
                     return tessVert(data);
                 }
 
-                /////////////////////////////////////////// BRDF ///////////////////////////////////////////
-                // Forrás: https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf
-
                 float luminance(float3 color){
                     return dot(color, float3(0.299f, 0.587f, 0.114f));
                 }

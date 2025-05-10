@@ -58,7 +58,6 @@ float2 UniformToGaussian(float u1, float u2){
     return float2(R * cos(theta), R * sin(theta));
 }
 
-// Forrás: https://github.com/gasgiant/FFT-Ocean/
 /**
  * @brief Óceanográfiai spektrum tulajdonságok
  */
@@ -75,7 +74,6 @@ struct SpectrumParameters{
 
 StructuredBuffer<SpectrumParameters> _Spectrums;
 
-// Forrás: https://m.cdn.blog.hu/da/darthasylum/tutorials/C++/ch56_ocean.html
 /**
  * @brief Vízhullámok diszperziós relációja
  * @param kMag Hullámvektor nagysága (hullámszám)

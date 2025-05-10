@@ -112,7 +112,6 @@ Shader "_Tibi/PostProcess/Clouds"
              * @return távolság a dobozig, távolság a dobozon belül
             */
             float2 rayBoxDst(float3 boundsMin, float3 boundsMax, float3 rayOrigin, float3 invRaydir) {
-                // Adapted from: http://jcgt.org/published/0007/03/04/
                 float3 t0 = (boundsMin - rayOrigin) * invRaydir;
                 float3 t1 = (boundsMax - rayOrigin) * invRaydir;
                 float3 tmin = min(t0, t1);
