@@ -2,6 +2,7 @@ Shader "_Tibi/Terrain_LOD"{
 
     Properties{
         _TangentTex ("Tangent", 2D) = "" {}
+        _NormalTex ("Normal", 2D) = "" {}
         _NormalStrength ("Normal Strength", Range(0.0, 3.0)) = 0.0
     }
 
@@ -106,6 +107,9 @@ Shader "_Tibi/Terrain_LOD"{
 
             TEXTURE2D(_AlbedoTex);
             SAMPLER(sampler_AlbedoTex);
+            TEXTURE2D(_HighAlbedoTex);
+            SAMPLER(sampler_HighAlbedoTex);
+
 			TEXTURE2D(_NormalTex);
             SAMPLER(sampler_NormalTex);
 			TEXTURE2D(_TangentTex);
@@ -114,9 +118,9 @@ Shader "_Tibi/Terrain_LOD"{
             SAMPLER(sampler_HeightTex);
 
             CBUFFER_START(UnityPerMaterial)
-                float4 _HeightTex_ST, _AlbedoTex_ST, _NormalTex_ST, _TangentTex_ST;
+                float4 _HeightTex_ST, _AlbedoTex_ST, _HighAlbedoTex_ST, _NormalTex_ST, _TangentTex_ST;
                 float4 _TopColor, _BotColor;
-                float _NormalStrength, _UV, _Roughness, _Metallic, _Subsurface, _Specular, _SpecularTint, _Anisotropic, _Sheen, _SheenTint, _ClearCoat, _ClearCoatGloss;
+                float _MinY,_MaxY,_NormalStrength, _UV, _Roughness, _Metallic, _Subsurface, _Specular, _SpecularTint, _Anisotropic, _Sheen, _SheenTint, _ClearCoat, _ClearCoatGloss;
                 int _isNormal;
             CBUFFER_END
 
@@ -384,6 +388,7 @@ Shader "_Tibi/Terrain_LOD"{
                 T = mul(lerp(float3(1.0f, 0.0f, 0.0f), T, saturate(_NormalStrength)), worldToTangent);
                 
                 float3 albedo = SAMPLE_TEXTURE2D(_AlbedoTex, sampler_AlbedoTex, uv*_UV).rgb;
+                float3 high_albedo = SAMPLE_TEXTURE2D(_HighAlbedoTex, sampler_HighAlbedoTex, uv*_UV).rgb;
 				
 				float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);
                 Light light = GetMainLight(shadowCoord);
@@ -396,11 +401,15 @@ Shader "_Tibi/Terrain_LOD"{
                 float3 Y = normalize(cross(N, T) * input.tangent.w);
 
                 BRDFResults reflection = BRDF(albedo, L, V, N, X, Y);
+                BRDFResults top_reflection = BRDF(high_albedo, L, V, N, X, Y);
 
                 float3 output = light.color * (reflection.diffuse + reflection.specular + reflection.clearcoat);
+                float3 top_output = light.color * (top_reflection.diffuse + top_reflection.specular + top_reflection.clearcoat);
                 output *= DotClamped(N, L);
+                top_output *= DotClamped(N, L);
 
-                return float4(max(0.0f, output), 1.0f);
+                float normalizedY = saturate((input.positionWS.y - _MinY) / (_MaxY - _MinY));
+                return float4(lerp(output, top_output, normalizedY),1.0);
 
 
   

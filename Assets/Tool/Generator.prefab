@@ -1,0 +1,505 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &371738232508662211
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4241341978660129897}
+  - component: {fileID: 1799792441230392629}
+  m_Layer: 0
+  m_Name: PostProcessVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4241341978660129897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371738232508662211}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 48.26564, y: 0, z: 724.03064}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4038119489355801099}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1799792441230392629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371738232508662211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: eda244a1e6992d54fb60d65324916ff9, type: 2}
+--- !u!1 &1677505330127430106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4038119489355801099}
+  - component: {fileID: 8169166132544112016}
+  m_Layer: 0
+  m_Name: Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4038119489355801099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677505330127430106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -67.427505, y: 0, z: -688.41156}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7483282538862584252}
+  - {fileID: 1721052341828147013}
+  - {fileID: 4241341978660129897}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8169166132544112016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677505330127430106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2427ff650edd7f246a4630b4bdc946d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainFormat: 0.5
+  vegetationDensity: 0.5
+  wind: 0.16
+  cloudAmount: 0.131
+  cloudType: 0.149
+  terrain: {fileID: 3764013717255288853}
+  water: {fileID: 5458478333999205986}
+  cloudvolume: {fileID: 1799792441230392629}
+  generateTerrain: 0
+  generateWater: 0
+  generateCloud: 0
+--- !u!1 &3122020976190634194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7483282538862584252}
+  - component: {fileID: 2053701358670148203}
+  - component: {fileID: 2205187207817982010}
+  - component: {fileID: 7210515491559507297}
+  - component: {fileID: 3764013717255288853}
+  m_Layer: 0
+  m_Name: Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7483282538862584252
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122020976190634194}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 67.427505, y: 0, z: 688.41156}
+  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4038119489355801099}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2053701358670148203
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122020976190634194}
+  m_Mesh: {fileID: 0}
+--- !u!23 &2205187207817982010
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122020976190634194}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &7210515491559507297
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122020976190634194}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!114 &3764013717255288853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122020976190634194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70798008b2ea7be40a055022ec138b30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TerrainShader: {fileID: 4800000, guid: 8bbcb05a32d30a7498c544bcbe260d2e, type: 3}
+  heightmapComputeShader: {fileID: 7200000, guid: cc4e68c4b50c79f49b224ca55ae12982,
+    type: 3}
+  vegetationComputeShader: {fileID: 7200000, guid: 79323db9c44acc24ead246f8dd6b3cc2,
+    type: 3}
+  vegetationMesh: {fileID: -2432090755550338912, guid: 77401c065dc3a6345b0a0784ce7ad914,
+    type: 3}
+  vegetationMaterial: {fileID: 2100000, guid: 0327ce8ba9c34bc4eb034edf6c304eaa, type: 2}
+  scale: 0.3
+  minMaxHeight: {x: 10, y: 20}
+  vegetationDensity: 0.95
+  vegetationSlope: 0.603
+  vegetationHeight: 23.2
+  updateOctave: 1
+  baseFrequency: 1
+  octave1:
+    lacunarity: 3.4940298
+    persistence: 1
+    rotation: 151
+    shift: 20.358027
+  octave2:
+    lacunarity: 3.8363028
+    persistence: 0.5024859
+    rotation: 47
+    shift: 79.2837
+  octave3:
+    lacunarity: 4.0758743
+    persistence: 0.24504894
+    rotation: 230
+    shift: 62.291115
+  octave4:
+    lacunarity: 4.187449
+    persistence: 0.18098992
+    rotation: 3
+    shift: 90.41548
+  reCalcCollision: 0
+  albedoTex: {fileID: 2800000, guid: bfed924ab5a51cb479a28a18dd85e66d, type: 3}
+  higher_albedoTex: {fileID: 2800000, guid: 2a3f30f1c4cb36644bbf261ba7afe88a, type: 3}
+  uvMap: 20
+  minY: 30
+  maxY: 80
+  metalic: 0
+  roughness: 1
+  subsurface: 1
+  specular: 0
+  specularTint: 0
+  anisotropic: 1
+  sheen: 0
+  sheenTint: 0
+  clearCoat: 0
+  clearCoatGloss: 0
+--- !u!1 &7056049989679432005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1721052341828147013}
+  - component: {fileID: 209746691454203248}
+  - component: {fileID: 2930060589512196026}
+  - component: {fileID: 5458478333999205986}
+  m_Layer: 0
+  m_Name: Water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1721052341828147013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7056049989679432005}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 67.427505, y: 10, z: 688.41156}
+  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4038119489355801099}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &209746691454203248
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7056049989679432005}
+  m_Mesh: {fileID: 0}
+--- !u!23 &2930060589512196026
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7056049989679432005}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5458478333999205986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7056049989679432005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1312a25259a8a9148ac2056176b3da1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterShader: {fileID: 4800000, guid: d39d20b1e795de14b8cc9d1121d4159e, type: 3}
+  computeShader: {fileID: 7200000, guid: 26984fe9f11cc4f4b80e9a59bf3c06d8, type: 3}
+  seed: 1
+  lowCutoff: 0.0001
+  highCutoff: 9000
+  gravity: 9.81
+  depth: 20
+  repeatTime: 200
+  speed: 1
+  lambda: {x: 1, y: 1}
+  displacementDepthFalloff: 1
+  updateSpectrum: 1
+  lengthScale1: 128
+  tile0: 0.01
+  debugTile0: 0
+  visualizeLayer0: 1
+  contributeDisplacement0: 1
+  spectrum1:
+    scale: 0.54343975
+    windSpeed: 1.5999999
+    windDirection: 66
+    fetch: 58971
+    spreadBlend: 0.10098423
+    swell: 0.011035976
+    peakEnhancement: 0.07775079
+    shortWavesFade: 0.054721534
+  spectrum2:
+    scale: 1.5895841
+    windSpeed: 1.5999999
+    windDirection: 330
+    fetch: 66982
+    spreadBlend: 0.045950174
+    swell: 0.14297462
+    peakEnhancement: 0.044079293
+    shortWavesFade: 0.012876968
+  lengthScale2: 64
+  tile1: 0.01
+  debugTile1: 0
+  visualizeLayer1: 0
+  contributeDisplacement1: 0
+  spectrum3:
+    scale: 1.6
+    windSpeed: 10
+    windDirection: 90
+    fetch: 100000
+    spreadBlend: 1
+    swell: 0
+    peakEnhancement: 7
+    shortWavesFade: 0.01
+  spectrum4:
+    scale: 1
+    windSpeed: 10
+    windDirection: 120
+    fetch: 100000
+    spreadBlend: 0.1
+    swell: 0.8
+    peakEnhancement: 7
+    shortWavesFade: 0.01
+  lengthScale3: 32
+  tile2: 0.01
+  debugTile2: 0
+  visualizeLayer2: 0
+  contributeDisplacement2: 0
+  spectrum5:
+    scale: 0.1
+    windSpeed: 1
+    windDirection: 165
+    fetch: 1000000
+    spreadBlend: 1
+    swell: 1
+    peakEnhancement: 7
+    shortWavesFade: 0
+  spectrum6:
+    scale: 0.4
+    windSpeed: 1
+    windDirection: 1
+    fetch: 100
+    spreadBlend: 1
+    swell: 0
+    peakEnhancement: 1
+    shortWavesFade: 0.01
+  lengthScale4: 32
+  tile3: 0.01
+  debugTile3: 0
+  visualizeLayer3: 0
+  contributeDisplacement3: 0
+  spectrum7:
+    scale: 1
+    windSpeed: 1
+    windDirection: 22
+    fetch: 100000
+    spreadBlend: 0.63
+    swell: 0.8
+    peakEnhancement: 1
+    shortWavesFade: 0.001
+  spectrum8:
+    scale: 0.23
+    windSpeed: 1
+    windDirection: 22
+    fetch: 1000
+    spreadBlend: 0.426
+    swell: 0.057
+    peakEnhancement: 1
+    shortWavesFade: 0.0001
+  normalStrength: 1
+  ambient: {r: 0.019382361, g: 0.25015837, b: 0.43965724, a: 0}
+  tipColor: {r: 0.9646866, g: 0.9646866, b: 0.9646866, a: 0}
+  metalic: 0.225
+  roughness: 1
+  subsurface: 1
+  specular: 2
+  specularTint: 1
+  anisotropic: 1
+  sheen: 1
+  sheenTint: 1
+  clearCoat: 1
+  clearCoatGloss: 1
+  foamBias: 0.01
+  foamThreshold: 0
+  foamAdd: 1
+  foamDecayRate: 0.1
+  foamDepthFalloff: 10
+  foamSubtract1: 2
+  foamSubtract2: -0.4
+  foamSubtract3: -0.5
+  foamSubtract4: 0
+  displacementTextures: {fileID: 0}
+  slopeTextures: {fileID: 0}
+  initialSpectrumTextures: {fileID: 0}
+  spectrumTextures: {fileID: 0}

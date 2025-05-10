@@ -231,7 +231,7 @@ public class FFTWater_BRDF : MonoBehaviour{
         waterMaterial.SetVector("_Ambient", ambient);
         waterMaterial.SetVector("_TipColor", tipColor);
 
-        waterMaterial.SetFloat("_Metalic", metalic);
+        waterMaterial.SetFloat("_Metallic", metalic);
         waterMaterial.SetFloat("_Subsurface", subsurface);
         waterMaterial.SetFloat("_Specular", specular);
         waterMaterial.SetFloat("_Roughness", roughness);

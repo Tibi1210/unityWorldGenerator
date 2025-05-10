@@ -121,7 +121,7 @@ public class Waves_sum : MonoBehaviour
         objMaterial.SetInteger("_Direction", direction);
 
         objMaterial.SetVector("_BaseColor", ambient);
-        objMaterial.SetFloat("_Metalic", metalic);
+        objMaterial.SetFloat("_Metallic", metalic);
         objMaterial.SetFloat("_Subsurface", subsurface);
         objMaterial.SetFloat("_Specular", specular);
         objMaterial.SetFloat("_Roughness", roughness);

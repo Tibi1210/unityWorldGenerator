@@ -84,8 +84,9 @@ public class TerrainScript : MonoBehaviour {
 
     [Header("Material Settings")]
     public Texture2D albedoTex;
-    public Texture2D normalTex;
+    public Texture2D higher_albedoTex;
     [Range(0.0f, 20.0f)]public float uvMap = 20.0f;
+    [Range(0.0f, 100.0f)]public float minY,maxY = 1;
     [Range(0.0f, 1.0f)] public float metalic = 1;
     [Range(0.0f, 1.0f)] public float roughness = 1;
     [Range(0.0f, 1.0f)] public float subsurface = 1;
@@ -330,9 +331,11 @@ public class TerrainScript : MonoBehaviour {
             Createvegetation();
         }
         objMaterial.SetTexture("_AlbedoTex", albedoTex);
-        objMaterial.SetTexture("_NormalTex", normalTex);
+        objMaterial.SetTexture("_HighAlbedoTex", higher_albedoTex);
+        objMaterial.SetFloat("_MinY", minY);
+        objMaterial.SetFloat("_MaxY", maxY);
         objMaterial.SetFloat("_UV", uvMap);
-        objMaterial.SetFloat("_Metalic", metalic);
+        objMaterial.SetFloat("_Metallic", metalic);
         objMaterial.SetFloat("_Subsurface", subsurface);
         objMaterial.SetFloat("_Specular", specular);
         objMaterial.SetFloat("_Roughness", roughness);

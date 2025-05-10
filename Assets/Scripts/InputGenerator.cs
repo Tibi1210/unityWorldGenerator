@@ -43,13 +43,11 @@ public class InputGenerator : MonoBehaviour
 
 public void UpdateTerrainParameters()
 {
-    int seed = DateTime.Now.Millisecond;
-    System.Random rng = new System.Random(seed);
-    
-    float effectiveTerrainFormat = (float)rng.NextDouble();
 
-    float lacunarityVariation = (float)(rng.NextDouble() * 0.4 - 0.2); // ±0.2
-    float persistenceVariation = (float)(rng.NextDouble() * 0.3 - 0.15); // ±0.15
+    float effectiveTerrainFormat = UnityEngine.Random.Range(0.0f, 1.0f);
+
+    float lacunarityVariation = (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 0.4 - 0.2);
+    float persistenceVariation = (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 0.3 - 0.15);
     
     float mountainFactor = effectiveTerrainFormat > 0.6f ? 
                           Mathf.Pow((effectiveTerrainFormat - 0.6f) / 0.4f, 2) : 0;
@@ -57,14 +55,14 @@ public void UpdateTerrainParameters()
     for (int i = 0; i < 4; i++)
     {
         float baseLacunarity = 2.0f + (i * 0.1f);
-        baseLacunarity += (float)(rng.NextDouble() * 0.4 - 0.2); // ±0.2
+        baseLacunarity += (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 0.4 - 0.2);
         
         octave[i].lacunarity = Mathf.Lerp(baseLacunarity, 
                                          baseLacunarity * (2.0f + mountainFactor), 
                                          effectiveTerrainFormat) + lacunarityVariation;
 
         float basePersistence = 0.5f * Mathf.Pow(0.5f, i);
-        basePersistence *= 1.0f + (float)(rng.NextDouble() * 0.4 - 0.2);
+        basePersistence *= 1.0f + (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 0.4 - 0.2);
         
         float persistenceMultiplier = i == 0 ? (2.0f + mountainFactor * 1.5f) : 
                                      (i == 1 ? (1.8f + mountainFactor) : 1.5f);
@@ -76,10 +74,10 @@ public void UpdateTerrainParameters()
         octave[i].persistence = Mathf.Clamp01(octave[i].persistence);
     }
     
-    float slopeVariation = (float)(rng.NextDouble() * 0.2 - 0.1);
+    float slopeVariation = (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 0.2 - 0.1);
     terrain.vegetationSlope = Mathf.Clamp(Mathf.Lerp(0.3f, 0.8f, effectiveTerrainFormat) + slopeVariation, 0.2f, 0.9f);
 
-    float heightVariation = (float)(rng.NextDouble() * 8 - 4);
+    float heightVariation = (float)(UnityEngine.Random.Range(0.0f, 1.0f) * 8 - 4);
     
     float baseMinHeight = Mathf.Lerp(-10f, 30f, effectiveTerrainFormat);
     terrain.vegetationHeight = baseMinHeight + heightVariation;
@@ -89,7 +87,7 @@ public void UpdateTerrainParameters()
         terrain.vegetationHeight += enhancedMountainFactor * 30f;
     }
 
-    float effectiveVegetationDensity = (float)rng.NextDouble() * vegetationDensity * 1.5f;
+    float effectiveVegetationDensity = UnityEngine.Random.Range(0.0f, 1.0f) * vegetationDensity * 1.5f;
     float maxDensity = Mathf.Lerp(1.0f, 0.5f, effectiveTerrainFormat);
     terrain.vegetationDensity = Mathf.Clamp(effectiveVegetationDensity * maxDensity, 0.1f, 1.0f);
 
